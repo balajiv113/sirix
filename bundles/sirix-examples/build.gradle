@@ -1,6 +1,6 @@
 dependencies {
-    implementation project(':sirix-core')
-    implementation project(':sirix-xquery')
+    implementation project(':bundles:sirix-core')
+    implementation project(':bundles:sirix-xquery')
 }
 
 description = 'sirix-example'
