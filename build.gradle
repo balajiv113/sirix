@@ -54,6 +54,7 @@ subprojects {
 
     release {
         failOnSnapshotDependencies = false
+		versionPropertyFile = 'build.gradle'
     }
 
     jacocoTestReport {
