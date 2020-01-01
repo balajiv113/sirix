@@ -29,9 +29,16 @@ task releaseBuild {
     }
 }
 
+task uploadPublications {
+    project.afterEvaluate {
+        dependsOn project.getTasksByName('publishAllPublicationsToMavenRepository', true)
+    }
+}
+
+afterReleaseBuild.dependsOn(uploadPublications)
+
 allprojects {
     group = 'io.sirix'
-    version = '0.9.4-SNAPSHOT'
 
     apply plugin: 'jacoco'
     apply plugin: 'com.github.kt3k.coveralls'
@@ -56,6 +63,12 @@ subprojects {
     java {
         sourceCompatibility = JavaVersion.VERSION_13
         targetCompatibility = JavaVersion.VERSION_13
+        withSourcesJar()
+        withJavadocJar()
+    }
+
+    javadoc {
+        failOnError = false
     }
 
     spotless {
@@ -76,6 +89,17 @@ subprojects {
         publications {
             maven(MavenPublication) {
                 from(components.java)
+            }
+        }
+        repositories {
+            maven {
+                credentials {
+                    username System.getenv("SONATYPE_NEXUS_USERNAME")
+                    password System.getenv("SONATYPE_NEXUS_PASSWORD")
+                }
+                def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+                def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+                url = rootProject.getProperties().version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
             }
         }
     }
